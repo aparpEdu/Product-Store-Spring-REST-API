@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
 
 @Data
 @Schema(description = "ProductDto Model Information")
@@ -21,5 +22,6 @@ public class ProductDto {
     @Schema(description = "Store product availability")
     private boolean active;
     @Schema(description = "Store product's image URL")
+    @URL
     private String imageUrl;
 }
