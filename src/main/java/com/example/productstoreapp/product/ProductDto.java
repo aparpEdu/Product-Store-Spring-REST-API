@@ -24,4 +24,5 @@ public class ProductDto {
     @Schema(description = "Store product's image URL")
     @URL
     private String imageUrl;
+    private Long orderId;
 }

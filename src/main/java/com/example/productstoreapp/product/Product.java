@@ -1,11 +1,13 @@
 package com.example.productstoreapp.product;
 
+import com.example.productstoreapp.transaction.order.Order;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "products")
@@ -25,5 +27,12 @@ public class Product {
     private LocalDateTime dateCreated;
     @UpdateTimestamp
     private LocalDateTime dateUpdated;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, sku, name, description, active, imageUrl, dateCreated, dateUpdated);
+    }
 }
