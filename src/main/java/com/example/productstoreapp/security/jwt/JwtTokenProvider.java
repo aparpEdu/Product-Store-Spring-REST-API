@@ -2,7 +2,7 @@ package com.example.productstoreapp.security.jwt;
 
 
 
-import com.example.productstoreapp.exception.BlogAPIException;
+import com.example.productstoreapp.exception.ProductStoreAPIException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -54,13 +54,13 @@ public class JwtTokenProvider {
                     .build()
                     .parse(token);
         }catch (MalformedJwtException exception){
-            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
+            throw new ProductStoreAPIException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
         }catch (ExpiredJwtException exception){
-            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Expired JWT token");
+            throw new ProductStoreAPIException(HttpStatus.BAD_REQUEST, "Expired JWT token");
         }catch (UnsupportedJwtException exception){
-            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
+            throw new ProductStoreAPIException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
         }catch (IllegalArgumentException exception){
-            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "JWT claims string is empty ");
+            throw new ProductStoreAPIException(HttpStatus.BAD_REQUEST, "JWT claims string is empty ");
         }
         return  true;
     }

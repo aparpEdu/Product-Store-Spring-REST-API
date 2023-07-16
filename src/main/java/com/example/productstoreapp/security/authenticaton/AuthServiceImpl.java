@@ -1,7 +1,7 @@
 package com.example.productstoreapp.security.authenticaton;
 
 
-import com.example.productstoreapp.exception.BlogAPIException;
+import com.example.productstoreapp.exception.ProductStoreAPIException;
 import com.example.productstoreapp.exception.ResourceNotFoundException;
 import com.example.productstoreapp.role.Role;
 import com.example.productstoreapp.role.RoleRepository;
@@ -50,11 +50,11 @@ public class AuthServiceImpl implements  AuthService{
     @Override
     public String register(RegisterDto registerDto) {
         if(userRepository.existsByUsername(registerDto.getUsername())){
-            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Username already exists");
+            throw new ProductStoreAPIException(HttpStatus.BAD_REQUEST, "Username already exists");
         }
 
         if(userRepository.existsByUsername(registerDto.getEmail())){
-            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Email already exists");
+            throw new ProductStoreAPIException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
 
         User user = new User();
