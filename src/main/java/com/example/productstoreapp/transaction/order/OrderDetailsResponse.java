@@ -17,4 +17,5 @@ public class OrderDetailsResponse {
     private BigDecimal totalPrice;
     private String status;
     private List<ProductDto> products;
+    private Long userId;
 }

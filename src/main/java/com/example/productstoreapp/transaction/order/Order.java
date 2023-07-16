@@ -1,6 +1,7 @@
 package com.example.productstoreapp.transaction.order;
 
 import com.example.productstoreapp.product.Product;
+import com.example.productstoreapp.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,6 +33,9 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> products = new HashSet<>();
     private Long shoppingCartId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "user_id")
+    private User user;
 
     @Override
     public int hashCode() {

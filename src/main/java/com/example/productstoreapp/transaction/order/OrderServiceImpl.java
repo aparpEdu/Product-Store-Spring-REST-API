@@ -1,11 +1,14 @@
 package com.example.productstoreapp.transaction.order;
 
 import com.example.productstoreapp.exception.PaymentException;
+import com.example.productstoreapp.exception.ResourceNotFoundException;
 import com.example.productstoreapp.product.Product;
 import com.example.productstoreapp.product.ProductDto;
 import com.example.productstoreapp.product.ProductRepository;
 import com.example.productstoreapp.transaction.payment.Payment;
 import com.example.productstoreapp.transaction.payment.PaymentRepository;
+import com.example.productstoreapp.user.User;
+import com.example.productstoreapp.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,22 +24,27 @@ public class OrderServiceImpl implements OrderService{
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
 
-    public OrderServiceImpl(PaymentRepository paymentRepository, OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderServiceImpl(PaymentRepository paymentRepository, OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository) {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
-    public OrderResponse placeOrder(OrderRequest orderRequest) {
+    public OrderResponse placeOrder(OrderRequest orderRequest, Long userId) {
 
         Order order = orderRequest.getOrder();
         order.setStatus("IN PROGRESS");
         String orderTrackingNumber = UUID.randomUUID().toString();
         order.setOrderTrackingNumber(orderTrackingNumber);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        order.setUser(user);
         order.setProducts(new HashSet<>(productRepository.findAllById(orderRequest.getProductIds())));
         orderRepository.save(order);
         Order foundOrder = orderRepository.findOrderByOrderTrackingNumber(order.getOrderTrackingNumber());
@@ -74,6 +82,7 @@ public class OrderServiceImpl implements OrderService{
             orderDetails.setTotalQuantity(order.getTotalQuantity());
             orderDetails.setTotalPrice(order.getTotalPrice());
             orderDetails.setStatus(order.getStatus());
+            orderDetails.setUserId(order.getUser().getId());
 
             List<Product> products = productRepository.findByOrder(order);
             List<ProductDto> productDTOs = new ArrayList<>();
