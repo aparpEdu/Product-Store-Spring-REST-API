@@ -1,7 +1,5 @@
 package com.example.productstoreapp.security.authenticaton;
 
-
-import com.example.productstoreapp.email.EmailBuilder;
 import com.example.productstoreapp.email.EmailService;
 import com.example.productstoreapp.exception.ProductStoreAPIException;
 import com.example.productstoreapp.exception.ResourceNotFoundException;
@@ -21,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -36,11 +36,13 @@ public class AuthServiceImpl implements  AuthService{
    private final JwtTokenProvider tokenProvider;
    private final ConfirmationTokenService confirmationTokenService;
    private final EmailService emailService;
+    private final TemplateEngine templateEngine;
 
     public AuthServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository,
                            RoleRepository roleRepository, PasswordEncoder passwordEncoder,
                            JwtTokenProvider tokenProvider,
-                           ConfirmationTokenService confirmationTokenService, EmailService emailService) {
+                           ConfirmationTokenService confirmationTokenService, EmailService emailService,
+                           TemplateEngine templateEngine) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -48,6 +50,7 @@ public class AuthServiceImpl implements  AuthService{
         this.tokenProvider = tokenProvider;
         this.confirmationTokenService = confirmationTokenService;
         this.emailService = emailService;
+        this.templateEngine = templateEngine;
     }
 
     @Override
@@ -93,8 +96,11 @@ public class AuthServiceImpl implements  AuthService{
         confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(15));
         confirmationToken.setUser(user);
         confirmationTokenService.saveConfirmationToken(confirmationToken);
+        Context context = new Context();
+        context.setVariable("name", user.getName());
         String confirmationLink = "http://localhost:8080/api/v1/auth/confirm?token=" + token;
-        emailService.send(registerDto.getEmail(), EmailBuilder.buildEmailConfirmation(registerDto.getName(), confirmationLink));
+        context.setVariable("link", confirmationLink);
+        emailService.send(registerDto.getEmail(), templateEngine.process("emailConfirmation", context));
         return "User registered successfully! DEV TOKEN: "+ token;
     }
 
@@ -110,7 +116,9 @@ public class AuthServiceImpl implements  AuthService{
 
         userWithNewPassword.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
         userRepository.save(userWithNewPassword);
-        emailService.send(userWithNewPassword.getEmail(), EmailBuilder.buildEmailChangePassword(userWithNewPassword.getName()));
+        Context context = new Context();
+        context.setVariable("name", userWithNewPassword.getName());
+        emailService.send(userWithNewPassword.getEmail(), templateEngine.process("emailChangePassword.", context));
         return "Password changed successfully";
     }
 
@@ -128,7 +136,10 @@ public class AuthServiceImpl implements  AuthService{
         confirmationToken.setUser(userToResetPassword);
         confirmationTokenService.saveConfirmationToken(confirmationToken);
         String confirmationLink = "http://localhost:8080/api/v1/auth/reset?token=" + token;
-        emailService.send(userEmail, EmailBuilder.buildEmailForgotPassword(userToResetPassword.getName(), confirmationLink));
+        Context context = new Context();
+        context.setVariable("name", userToResetPassword.getName());
+        context.setVariable("link", confirmationLink);
+        emailService.send(userEmail, templateEngine.process("emailForgotPassword", context));
         return "Email was sent with additional steps to reset your password! DEV TOKEN:" + token;
     }
 

@@ -1,6 +1,5 @@
 package com.example.productstoreapp.transaction.order;
 
-import com.example.productstoreapp.email.EmailBuilder;
 import com.example.productstoreapp.email.EmailService;
 import com.example.productstoreapp.exception.PaymentException;
 import com.example.productstoreapp.exception.ResourceNotFoundException;
@@ -13,6 +12,8 @@ import com.example.productstoreapp.user.User;
 import com.example.productstoreapp.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,16 +29,18 @@ public class OrderServiceImpl implements OrderService{
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final TemplateEngine templateEngine;
 
 
     public OrderServiceImpl(PaymentRepository paymentRepository, OrderRepository orderRepository,
                             ProductRepository productRepository,
-                            UserRepository userRepository, EmailService emailService) {
+                            UserRepository userRepository, EmailService emailService, TemplateEngine templateEngine) {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.templateEngine = templateEngine;
     }
 
     @Override
@@ -67,7 +70,10 @@ public class OrderServiceImpl implements OrderService{
 
         payment.setOrderId(order.getId());
         paymentRepository.save(payment);
-        emailService.send(user.getEmail(), EmailBuilder.buildEmailPurchaseConfirmation(user.getName(), EmailBuilder.buildEmailPurchaseConfirmation(user.getName(), orderTrackingNumber)));
+        Context context = new Context();
+        context.setVariable("name", user.getName());
+        context.setVariable("trackingNumber", orderTrackingNumber);
+        emailService.send(user.getEmail(), templateEngine.process("emailPurchaseConfirmation", context));
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setOrderTrackingNumber(order.getOrderTrackingNumber());
         orderResponse.setStatus(order.getStatus());
