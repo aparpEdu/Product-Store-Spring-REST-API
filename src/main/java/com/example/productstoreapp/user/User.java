@@ -32,6 +32,8 @@ public class User {
     @NotBlank(message = "Password should not be left blank!")
     @Size(min = 8, message = "Password should be at least 8 symbols")
     private String password;
+    @Column(columnDefinition = "boolean default false")
+    private boolean confirmed;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id") )
