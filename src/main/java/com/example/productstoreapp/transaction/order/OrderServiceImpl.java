@@ -1,5 +1,7 @@
 package com.example.productstoreapp.transaction.order;
 
+import com.example.productstoreapp.email.EmailBuilder;
+import com.example.productstoreapp.email.EmailService;
 import com.example.productstoreapp.exception.PaymentException;
 import com.example.productstoreapp.exception.ResourceNotFoundException;
 import com.example.productstoreapp.product.Product;
@@ -25,13 +27,17 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
 
-    public OrderServiceImpl(PaymentRepository paymentRepository, OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository) {
+    public OrderServiceImpl(PaymentRepository paymentRepository, OrderRepository orderRepository,
+                            ProductRepository productRepository,
+                            UserRepository userRepository, EmailService emailService) {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -61,7 +67,7 @@ public class OrderServiceImpl implements OrderService{
 
         payment.setOrderId(order.getId());
         paymentRepository.save(payment);
-
+        emailService.send(user.getEmail(), EmailBuilder.buildEmailPurchaseConfirmation(user.getName(), EmailBuilder.buildEmailPurchaseConfirmation(user.getName(), orderTrackingNumber)));
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setOrderTrackingNumber(order.getOrderTrackingNumber());
         orderResponse.setStatus(order.getStatus());

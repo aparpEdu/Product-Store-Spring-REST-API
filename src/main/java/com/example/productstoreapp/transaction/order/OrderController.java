@@ -23,6 +23,8 @@ public class OrderController {
     public ResponseEntity<OrderResponse> placeOrder(@RequestBody OrderRequest orderRequest, @PathVariable Long userId){
         return new ResponseEntity<>(orderService.placeOrder(orderRequest, userId), HttpStatus.CREATED);
     }
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/orders")
     public ResponseEntity<List<OrderDetailsResponse>> getAllOrders(){
         return ResponseEntity.ok(orderService.checkAllOrders());
