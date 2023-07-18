@@ -1,5 +1,5 @@
 package com.example.productstoreapp.email;
 
 public interface EmailService {
-    void send(String receiver, String email);
+    void send(String receiver, String email, String subject);
 }

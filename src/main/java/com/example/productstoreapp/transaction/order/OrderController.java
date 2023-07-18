@@ -56,7 +56,7 @@ public class OrderController {
             responseCode = "200",
             description = "Http status 200 SUCCESS"
     )
-    @GetMapping("/orders")
+    @GetMapping("/orders/track")
     public ResponseEntity<OrderDetailsResponse> trackOrder(@RequestParam String trackingNumber){
         return  ResponseEntity.ok(orderService.trackOrder(trackingNumber));
     }

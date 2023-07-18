@@ -72,11 +72,12 @@ public class OrderServiceImpl implements OrderService{
         payment.setOrderId(order.getId());
         paymentRepository.save(payment);
         Context context = new Context();
-        String trackingLink = "http://localhost:8080/api/v1/orders?trackingNumber="+ orderTrackingNumber;
+        String trackingLink = "http://localhost:8080/api/v1/orders/track?trackingNumber="+ orderTrackingNumber;
         context.setVariable("name", user.getName());
         context.setVariable("trackingNumber", orderTrackingNumber);
         context.setVariable("link", trackingLink );
-        emailService.send(user.getEmail(), templateEngine.process("emailPurchaseConfirmation", context));
+        emailService.send(user.getEmail(), templateEngine.process("emailPurchaseConfirmation", context),
+                "Purchase Receipt");
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setOrderTrackingNumber(order.getOrderTrackingNumber());
         orderResponse.setStatus(order.getStatus());

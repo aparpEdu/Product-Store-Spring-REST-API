@@ -21,13 +21,13 @@ public class EmailServiceImpl implements EmailService{
         this.mailSender = mailSender;
     }
     @Override
-    public void send(String receiver, String email) {
+    public void send(String receiver, String email, String subject) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setText(email, true);
             helper.setTo(receiver);
-            helper.setSubject("Email Confirmation");
+            helper.setSubject(subject);
             helper.setFrom("product_store@gmail.com");
             mailSender.send(mimeMessage);
 
