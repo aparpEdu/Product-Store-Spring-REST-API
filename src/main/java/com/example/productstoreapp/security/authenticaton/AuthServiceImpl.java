@@ -100,7 +100,7 @@ public class AuthServiceImpl implements  AuthService{
         context.setVariable("name", user.getName());
         String confirmationLink = "http://localhost:8080/api/v1/auth/confirm?token=" + token;
         context.setVariable("link", confirmationLink);
-        emailService.send(registerDto.getEmail(), templateEngine.process("emailConfirmation", context),
+        emailService.send(registerDto.getEmail(), templateEngine.process("email-confirmation", context),
                 "Email Confirmation");
         return "User registered successfully! DEV TOKEN: "+ token;
     }
@@ -120,7 +120,7 @@ public class AuthServiceImpl implements  AuthService{
         Context context = new Context();
         context.setVariable("name", userWithNewPassword.getName());
         emailService.send(userWithNewPassword.getEmail(),
-                templateEngine.process("emailChangePassword", context), "Changed Password");
+                templateEngine.process("email-change-password", context), "Changed Password");
         return "Password changed successfully";
     }
 
@@ -141,7 +141,7 @@ public class AuthServiceImpl implements  AuthService{
         Context context = new Context();
         context.setVariable("name", userToResetPassword.getName());
         context.setVariable("link", confirmationLink);
-        emailService.send(userEmail, templateEngine.process("emailForgotPassword", context),
+        emailService.send(userEmail, templateEngine.process("email-forgot-password", context),
                 "Reset Password steps");
         return "Email was sent with additional steps to reset your password! DEV TOKEN:" + token;
     }
