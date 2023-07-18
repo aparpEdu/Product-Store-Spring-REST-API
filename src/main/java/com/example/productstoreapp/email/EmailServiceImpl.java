@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService{
             helper.setText(email, true);
             helper.setTo(receiver);
             helper.setSubject("Email Confirmation");
-            helper.setFrom("group_a@gmail.com");
+            helper.setFrom("product_store@gmail.com");
             mailSender.send(mimeMessage);
 
         }catch (MessagingException exception){
