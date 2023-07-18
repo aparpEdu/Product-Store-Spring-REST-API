@@ -76,7 +76,7 @@ public class OrderServiceImpl implements OrderService{
         context.setVariable("name", user.getName());
         context.setVariable("trackingNumber", orderTrackingNumber);
         context.setVariable("link", trackingLink );
-        emailService.send(user.getEmail(), templateEngine.process("emailPurchaseConfirmation", context),
+        emailService.send(user.getEmail(), templateEngine.process("email-purchase-confirmation", context),
                 "Purchase Receipt");
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setOrderTrackingNumber(order.getOrderTrackingNumber());

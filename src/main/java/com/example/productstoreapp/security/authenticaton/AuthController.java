@@ -80,7 +80,7 @@ public class AuthController {
             name = "Bearer Authentication"
     )
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @PatchMapping (value ="/{userId}/changePassword")
+    @PatchMapping (value ="/{userId}/change-password")
     public ResponseEntity<String> changePassword(
             @RequestBody @Valid ChangePasswordDto changePasswordDto,
             @PathVariable Long userId)
@@ -97,7 +97,7 @@ public class AuthController {
             responseCode = "200",
             description = "Http Status 200 SUCCESS"
     )
-    @PostMapping("forgot")
+    @PostMapping("forgot-password")
     public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordDto forgotPasswordDto){
         return ResponseEntity.ok(authService.forgotPassword(forgotPasswordDto));
     }
@@ -109,7 +109,7 @@ public class AuthController {
             responseCode = "200",
             description = "Http Status 200 SUCCESS"
     )
-    @PutMapping("reset")
+    @PutMapping("reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam String token, @Valid @RequestBody ResetPasswordDto resetPasswordDto){
         return ResponseEntity.ok(authService.resetPassword(resetPasswordDto, token));
     }
