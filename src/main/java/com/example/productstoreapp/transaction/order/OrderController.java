@@ -48,4 +48,16 @@ public class OrderController {
     public ResponseEntity<List<OrderDetailsResponse>> getAllOrders(){
         return ResponseEntity.ok(orderService.checkAllOrders());
     }
+    @Operation(
+            summary = "Track Order REST API",
+            description = "Track Order REST API is used to get order by its tracking number from the database"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http status 200 SUCCESS"
+    )
+    @GetMapping("/orders")
+    public ResponseEntity<OrderDetailsResponse> trackOrder(@RequestParam String trackingNumber){
+        return  ResponseEntity.ok(orderService.trackOrder(trackingNumber));
+    }
 }

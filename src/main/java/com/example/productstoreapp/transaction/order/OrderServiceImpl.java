@@ -56,7 +56,8 @@ public class OrderServiceImpl implements OrderService{
         order.setUser(user);
         order.setProducts(new HashSet<>(productRepository.findAllById(orderRequest.getProductIds())));
         orderRepository.save(order);
-        Order foundOrder = orderRepository.findOrderByOrderTrackingNumber(order.getOrderTrackingNumber());
+        Order foundOrder = orderRepository.findOrderByOrderTrackingNumber(order.getOrderTrackingNumber())
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "Tracking number", orderTrackingNumber));
         for(Product product: order.getProducts()){
             product.setOrder(foundOrder);
             productRepository.save(product);
@@ -71,8 +72,10 @@ public class OrderServiceImpl implements OrderService{
         payment.setOrderId(order.getId());
         paymentRepository.save(payment);
         Context context = new Context();
+        String trackingLink = "http://localhost:8080/api/v1/orders?trackingNumber="+ orderTrackingNumber;
         context.setVariable("name", user.getName());
         context.setVariable("trackingNumber", orderTrackingNumber);
+        context.setVariable("link", trackingLink );
         emailService.send(user.getEmail(), templateEngine.process("emailPurchaseConfirmation", context));
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setOrderTrackingNumber(order.getOrderTrackingNumber());
@@ -111,6 +114,22 @@ public class OrderServiceImpl implements OrderService{
         }
 
         return orderDetailsList;
+    }
+
+    @Override
+    public OrderDetailsResponse trackOrder(String trackingNumber) {
+        Order foundOrder = orderRepository.findOrderByOrderTrackingNumber(trackingNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "Tracking number", trackingNumber));
+        OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
+        orderDetailsResponse.setOrderTrackingNumber(trackingNumber);
+        orderDetailsResponse.setTotalQuantity(foundOrder.getTotalQuantity());
+        orderDetailsResponse.setTotalPrice(foundOrder.getTotalPrice());
+        orderDetailsResponse.setStatus(foundOrder.getStatus());
+        orderDetailsResponse.setUserId(foundOrder.getUser().getId());
+        List<ProductDto> products = foundOrder.getProducts().stream().map(this::mapProductToDTO).toList();
+        orderDetailsResponse.setProducts(products);
+        orderDetailsResponse.setOrderId(foundOrder.getId());
+        return orderDetailsResponse;
     }
 
     private ProductDto mapProductToDTO(Product product) {
